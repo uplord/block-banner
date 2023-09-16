@@ -1,5 +1,5 @@
 <template>
-  <div :id="id" class="banner alignmax" :class="[ slides_text, { 'animate js_section': animate == 'true', 'visible': visible == true } ]">
+  <div :id="id" class="banner alignmax" :class="[ slides_text, { 'animate js_section': set_animate == true, 'visible': set_visible == true } ]">
     <div class="slides" :class="{ 'has-multiple': all_slides.length > 1 }">
 
       <div class="slide" v-for="(slide, key) in all_slides" :key="key" :class="[
@@ -56,6 +56,8 @@ export default {
   ],
   data() {
     return {
+      set_animate: false,
+      set_visible: false,
       all_slides: this.slides,
       controls: false,
       current_slide: 0,
@@ -66,15 +68,85 @@ export default {
     }
   },
   mounted() {
+    if (this.animate != 'true' && this.visible != true) {
+      console.log(111)
+      //this.set_animate = true
+      this.set_visible = true
 
+      this.loadSlides()
+    }
   },
   methods: {
+    loadSlides() {
+
+      var vm = this
+
+      vm.all_slides[0].active = true
+      vm.all_slides[0].show_image = true
+
+      if (vm.all_slides[0].class && (vm.all_slides[0].class.includes('dark') || vm.all_slides[0].class.includes('light'))) {
+        document.getElementsByClassName('header')[0].classList.remove('banner-color')
+
+        if (vm.all_slides[0].class.includes('dark')) {
+          vm.slides_text = 'is-dark'
+          if (document.body.classList.contains('homepage') && document.getElementsByClassName('header').length) {
+            document.getElementsByClassName('header')[0].classList.add('dark-header')
+          }
+        } else {
+          vm.slides_text = 'is-light'
+          if (document.body.classList.contains('homepage') && document.getElementsByClassName('header').length) {
+            document.getElementsByClassName('header')[0].classList.add('light-header')
+          }
+        }
+      } else {
+        if (document.getElementsByClassName('header').length) {
+          document.getElementsByClassName('header')[0].classList.add('banner-color')
+        }
+        vm.slides_text = 'is-auto'
+      }
+      if (this.set_animate == true) {
+        setTimeout(function() {
+          vm.all_slides[0].show_text = true
+
+          if (vm.all_slides.length > 1) {
+            vm.controls = true
+          }
+        }, 300);
+
+        setTimeout(function() {
+          vm.sliding = false
+
+          if (vm.slides.length > 1) {
+            /*
+            setInterval(function() {
+              if(!vm.paused) {
+                vm.time++;
+
+                vm.changeSlide('next')
+              }
+            }, 5000)
+            */
+          }
+        }, 600);
+
+      } else {
+        vm.all_slides[0].show_text = true
+        if (vm.all_slides.length > 1) {
+          vm.controls = true
+        }
+
+        vm.sliding = false
+      }
+
+    },
     changeSlide(direction) {
       var vm = this,
         new_slide = vm.current_slide,
         old_slide = vm.current_slide
 
       if (vm.sliding == false) {
+        vm.set_animate = true
+
         if (direction == 'prev') {
           new_slide--
           if (new_slide < 0) {
@@ -107,21 +179,23 @@ export default {
 
               if (vm.all_slides[new_slide].class.includes('dark')) {
                 vm.slides_text = 'is-dark'
-                if (document.body.classList.contains('homepage')) {
+                if (document.body.classList.contains('homepage') && document.getElementsByClassName('header').length) {
                   document.getElementsByClassName('header')[0].classList.add('dark-header')
                   document.getElementsByClassName('header')[0].classList.remove('light-header')
                 }
               } else {
                 vm.slides_text = 'is-light'
-                if (document.body.classList.contains('homepage')) {
+                if (document.body.classList.contains('homepage') && document.getElementsByClassName('header').length) {
                   document.getElementsByClassName('header')[0].classList.remove('dark-header')
                   document.getElementsByClassName('header')[0].classList.add('light-header')
                 }
               }
             } else {
-              document.getElementsByClassName('header')[0].classList.add('banner-color')
-              document.getElementsByClassName('header')[0].classList.remove('dark-header')
-              document.getElementsByClassName('header')[0].classList.remove('light-header')
+              if (document.getElementsByClassName('header').length) {
+                document.getElementsByClassName('header')[0].classList.add('banner-color')
+                document.getElementsByClassName('header')[0].classList.remove('dark-header')
+                document.getElementsByClassName('header')[0].classList.remove('light-header')
+              }
               vm.slides_text = 'is-auto'
             }
           }, 600);
@@ -146,51 +220,10 @@ export default {
       var vm = this
 
       if (value == true) {
-        vm.all_slides[0].active = true
-        vm.all_slides[0].show_image = true
+        this.set_animate = true
+        this.set_visible = true
 
-        if (vm.all_slides[0].class && (vm.all_slides[0].class.includes('dark') || vm.all_slides[0].class.includes('light'))) {
-          document.getElementsByClassName('header')[0].classList.remove('banner-color')
-
-          if (vm.all_slides[0].class.includes('dark')) {
-            vm.slides_text = 'is-dark'
-            if (document.body.classList.contains('homepage')) {
-              document.getElementsByClassName('header')[0].classList.add('dark-header')
-            }
-          } else {
-            vm.slides_text = 'is-light'
-            if (document.body.classList.contains('homepage')) {
-              document.getElementsByClassName('header')[0].classList.add('light-header')
-            }
-          }
-        } else {
-          document.getElementsByClassName('header')[0].classList.add('banner-color')
-          vm.slides_text = 'is-auto'
-        }
-
-        setTimeout(function() {
-          vm.all_slides[0].show_text = true
-
-          if (vm.all_slides.length > 1) {
-            vm.controls = true
-          }
-        }, 300);
-
-        setTimeout(function() {
-          vm.sliding = false
-
-          if (vm.slides.length > 1) {
-            /*
-            setInterval(function() {
-              if(!vm.paused) {
-                vm.time++;
-
-                vm.changeSlide('next')
-              }
-            }, 5000)
-            */
-          }
-        }, 600);
+        vm.loadSlides()
       }
     }
   },

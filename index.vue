@@ -78,34 +78,36 @@ export default {
     loadSlides() {
 
       var vm = this,
-        header = document.getElementsByClassName('header')[0]
+        header = document.getElementsByClassName('header')[0],
+        homepage = document.body.classList.contains('homepage'),
+        first_slide = vm.all_slides[0]
 
-      vm.all_slides[0].active = true
-      vm.all_slides[0].show_image = true
+      first_slide.active = true
+      first_slide.show_image = true
 
-      if (vm.all_slides[0].class && (vm.all_slides[0].class.includes('dark') || vm.all_slides[0].class.includes('light'))) {
+      if (first_slide.class && (first_slide.class.includes('dark') || first_slide.class.includes('light'))) {
         header.classList.remove('banner-color')
 
-        if (vm.all_slides[0].class.includes('dark')) {
+        if (first_slide.class.includes('dark')) {
           vm.slides_text = 'is-dark'
-          if (document.body.classList.contains('homepage') && document.getElementsByClassName('header').length) {
+          if (homepage && header) {
             header.classList.add('dark-header')
           }
         } else {
           vm.slides_text = 'is-light'
-          if (document.body.classList.contains('homepage') && document.getElementsByClassName('header').length) {
+          if (homepage && header) {
             header.classList.add('light-header')
           }
         }
       } else {
-        if (document.getElementsByClassName('header').length) {
+        if (header) {
           header.classList.add('banner-color')
         }
         vm.slides_text = 'is-auto'
       }
-      if (this.set_animate == true) {
+      if (vm.set_animate == true) {
         setTimeout(function() {
-          vm.all_slides[0].show_text = true
+          first_slide.show_text = true
 
           if (vm.all_slides.length > 1) {
             vm.controls = true
@@ -116,20 +118,12 @@ export default {
           vm.sliding = false
 
           if (vm.slides.length > 1) {
-            /*
-            setInterval(function() {
-              if(!vm.paused) {
-                vm.time++;
-
-                vm.changeSlide('next')
-              }
-            }, 5000)
-            */
+            // Add auto scroll
           }
         }, 600);
 
       } else {
-        vm.all_slides[0].show_text = true
+        first_slide.show_text = true
         if (vm.all_slides.length > 1) {
           vm.controls = true
         }
@@ -141,72 +135,72 @@ export default {
     changeSlide(direction) {
       var vm = this,
         header = document.getElementsByClassName('header')[0],
-        new_slide = vm.current_slide,
-        old_slide = vm.current_slide
+        homepage = document.body.classList.contains('homepage'),
+        slide = vm.current_slide,
+        old = vm.current_slide,
+        new_slide = vm.all_slides[slide],
+        old_slide = vm.all_slides[old]
 
       if (vm.sliding == false) {
         vm.set_animate = true
 
         if (direction == 'prev') {
-          new_slide--
-          if (new_slide < 0) {
-            new_slide = vm.all_slides.length - 1
+          slide--
+          if (slide < 0) {
+            slide = vm.all_slides.length - 1
           }
         } else if (direction == 'next') {
-          new_slide++
-          if (new_slide >= vm.all_slides.length) {
-            new_slide = 0
+          slide++
+          if (slide >= vm.all_slides.length) {
+            slide = 0
           }
         } else {
-          new_slide = direction
+          slide = direction
         }
 
         if (direction != vm.current_slide) {
           vm.sliding = true
           vm.paused = true
 
-          vm.current_slide = new_slide
+          vm.current_slide = slide
+          new_slide = vm.all_slides[slide]
 
-          vm.all_slides[new_slide].active = true
-          vm.all_slides[old_slide].show_text = false
+          new_slide.active = true
+          old_slide.show_text = false
 
           setTimeout(function() {
-            vm.all_slides[new_slide].show_image = true
-            vm.all_slides[new_slide].top = true
+            new_slide.show_image = true
+            new_slide.top = true
 
-            if (vm.all_slides[new_slide].class && (vm.all_slides[new_slide].class.includes('dark') || vm.all_slides[new_slide].class.includes('light'))) {
-              if (document.getElementsByClassName('header').length) {
+            if (new_slide.class && (new_slide.class.includes('dark') || new_slide.class.includes('light'))) {
+              if (header) {
                 header.classList.remove('banner-color')
               }
 
-              if (vm.all_slides[new_slide].class.includes('dark')) {
+              if (new_slide.class.includes('dark')) {
                 vm.slides_text = 'is-dark'
-                if (document.body.classList.contains('homepage') && document.getElementsByClassName('header').length) {
-                  header.classList.add('dark-header')
-                  header.classList.remove('light-header')
+                if (homepage && header) {
+                  header.classList.add('dark-header').remove('light-header')
                 }
               } else {
                 vm.slides_text = 'is-light'
-                if (document.body.classList.contains('homepage') && document.getElementsByClassName('header').length) {
-                  header.classList.remove('dark-header')
-                  header.classList.add('light-header')
+                if (homepage && header) {
+                  header.classList.remove('dark-header').add('light-header')
                 }
               }
             } else {
-              if (document.getElementsByClassName('header').length) {
-                header.classList.add('banner-color')
-                header.classList.remove('dark-header')
-                header.classList.remove('light-header')
+              if (header.length) {
+                header.classList.add('banner-color').remove('dark-header').remove('light-header')
               }
               vm.slides_text = 'is-auto'
             }
           }, 600);
 
           setTimeout(function() {
-            vm.all_slides[old_slide].active = false
-            vm.all_slides[old_slide].show_image = false
-            vm.all_slides[new_slide].show_text = true
-            vm.all_slides[new_slide].top = false
+            old_slide.active = false
+            old_slide.show_image = false
+            new_slide.show_text = true
+            new_slide.top = false
           }, 1200);
 
           setTimeout(function() {

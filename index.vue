@@ -1,5 +1,5 @@
 <template>
-  <div :id="id" class="banner alignmax" :class="[ slides_text, { 'animate js_section': set_animate == true, 'visible': set_visible == true } ]">
+  <div :id="id" class="banner alignmax" :class="[ slides_text, { 'animate js_section': set_animate == true || animate == 'true', 'visible': set_visible == true } ]">
     <div class="slides" :class="{ 'has-multiple': all_slides.length > 1 }">
 
       <div class="slide" v-for="(slide, key) in all_slides" :key="key" :class="[
@@ -175,7 +175,9 @@ export default {
             vm.all_slides[new_slide].top = true
 
             if (vm.all_slides[new_slide].class && (vm.all_slides[new_slide].class.includes('dark') || vm.all_slides[new_slide].class.includes('light'))) {
-              document.getElementsByClassName('header')[0].classList.remove('banner-color')
+              if (document.getElementsByClassName('header').length) {
+                document.getElementsByClassName('header')[0].classList.remove('banner-color')
+              }
 
               if (vm.all_slides[new_slide].class.includes('dark')) {
                 vm.slides_text = 'is-dark'

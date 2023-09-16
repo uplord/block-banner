@@ -1,5 +1,5 @@
 <template>
-  <div :id="id" class="banner alignmax" :class="[ slides_text, { 'animate js_section': animate == true, 'visible': visible == true } ]">
+  <div :id="id" class="banner alignmax" :class="[ slides_text, { 'animate js_section': animate == 'true', 'visible': visible == true } ]">
     <div class="slides" :class="{ 'has-multiple': all_slides.length > 1 }">
 
       <div class="slide" v-for="(slide, key) in all_slides" :key="key" :class="[
@@ -21,7 +21,6 @@
         <div class="placeholder" v-else></div>
 
         <div class="text-content" :class="{ 'has-floating': slide.floating_image }">
-
           <div class="floating-image" v-if="slide.floating_image">
             <img :src="slide.floating_image" :alt="slide.title" loading="lazy" />
           </div>

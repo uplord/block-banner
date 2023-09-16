@@ -140,7 +140,7 @@ export default {
     },
     changeSlide(direction) {
       var vm = this,
-        header = document.getElementsByClassName('header')[0]
+        header = document.getElementsByClassName('header')[0],
         new_slide = vm.current_slide,
         old_slide = vm.current_slide
 

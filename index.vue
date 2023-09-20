@@ -1,28 +1,28 @@
 <template>
-  <div :id="id" class="banner alignmax" :class="[ slides_text, { 'animate js_section': set_animate == true || animate == 'true', 'visible': set_visible == true } ]">
-    <div class="slides" :class="{ 'has-multiple': all_slides.length > 1 }">
+  <div :id="id" class="banner alignmax" :class="[ slidesText, { 'animate js_section': setAnimate || animate == 'true', 'visible': setVisible } ]">
+    <div class="slides" :class="{ 'has-multiple': allSlides.length > 1 }">
 
-      <div class="slide" v-for="(slide, key) in all_slides" :key="key" :class="[
+      <div class="slide" v-for="(slide, key) in allSlides" :key="key" :class="[
         slide.class,
         {
-          'active' : slide.active == true,
-          'show-image': slide.show_image == true,
-          'show-text': slide.show_text == true,
-          'top': slide.top == true,
+          'active' : slide.active,
+          'show-image': slide.showImage,
+          'show-text': slide.showText,
+          'top': slide.top,
         }
       ]">
         <div class="image-wrap" v-if="slide.image">
           <picture>
-            <source :srcset="slide.image_mobile" media="(max-width: 640px)">
+            <source :srcset="slide.imageMobile" media="(max-width: 640px)">
             <img :src="slide.image" :alt="slide.title" />
           </picture>
         </div>
 
         <div class="placeholder" v-else></div>
 
-        <div class="text-content" :class="{ 'has-floating': slide.floating_image }">
-          <div class="floating-image" v-if="slide.floating_image">
-            <img :src="slide.floating_image" :alt="slide.title" loading="lazy" />
+        <div class="text-content" :class="{ 'has-floating': slide.floatingImage }">
+          <div class="floating-image" v-if="slide.floatingImage">
+            <img :src="slide.floatingImage" :alt="slide.title" loading="lazy" />
           </div>
 
           <div class="text-wrap">
@@ -36,7 +36,7 @@
       </div>
 
       <div class="controls" :class="{ 'show': controls == true }">
-        <div v-for="(slide, key) in slides" :key="key" v-on:click="changeSlide(key)" class="dot" :class="{ 'active' : key == current_slide }"></div>
+        <div v-for="(slide, key) in slides" :key="key" v-on:click="changeSlide(key)" class="dot" :class="{ 'active' : key == currentSlide }"></div>
       </div>
 
       <div class="arrow prev" v-on:click="changeSlide('prev')" :class="{ 'show': controls == true }"></div>
@@ -48,159 +48,101 @@
 <script>
 
 export default {
-  props: [
-    'animate',
-    'visible',
-    'slides',
-    'id',
-  ],
+  props: ['animate', 'visible', 'slides', 'id'],
   data() {
     return {
-      set_animate: false,
-      set_visible: false,
-      all_slides: this.slides,
+      setAnimate: false,
+      setVisible: false,
+      allSlides: this.slides,
       controls: false,
-      current_slide: 0,
-      slides_text: null,
+      currentSlide: 0,
+      slidesText: null,
       sliding: true,
       paused: false,
       time: 0,
     }
   },
   mounted() {
-    if (this.animate != 'true' && this.visible != true) {
-      this.set_visible = true
-
+    if (this.animate !== 'true' && this.visible !== true) {
+      this.setVisible = true
       this.loadSlides()
     }
   },
   methods: {
     loadSlides() {
+      const firstSlide = this.allSlides[0]
+      firstSlide.active = true
+      firstSlide.showImage = true
+      this.headerClass()
 
-      var vm = this,
-        header = document.getElementsByClassName('header')[0],
-        homepage = document.body.classList.contains('homepage'),
-        first_slide = vm.all_slides[0]
-
-      first_slide.active = true
-      first_slide.show_image = true
-
-      if (first_slide.class && (first_slide.class.includes('dark') || first_slide.class.includes('light'))) {
-        header.classList.remove('banner-color')
-
-        if (first_slide.class.includes('dark')) {
-          vm.slides_text = 'is-dark'
-          if (homepage && header) {
-            header.classList.add('dark-header')
-          }
-        } else {
-          vm.slides_text = 'is-light'
-          if (homepage && header) {
-            header.classList.add('light-header')
-          }
-        }
-      } else {
-        if (header) {
-          header.classList.add('banner-color')
-        }
-        vm.slides_text = 'is-auto'
-      }
-      if (vm.set_animate == true) {
+      if (this.setAnimate == true) {
         setTimeout(function() {
-          first_slide.show_text = true
-
-          if (vm.all_slides.length > 1) {
-            vm.controls = true
+          firstSlide.showText = true
+          if (this.allSlides.length > 1) {
+            this.controls = true
           }
         }, 300);
 
         setTimeout(function() {
-          vm.sliding = false
-
-          if (vm.slides.length > 1) {
+          this.sliding = false
+          if (this.slides.length > 1) {
             // Add auto scroll
           }
         }, 600);
 
       } else {
-        first_slide.show_text = true
-        if (vm.all_slides.length > 1) {
-          vm.controls = true
+        firstSlide.showText = true
+        if (this.allSlides.length > 1) {
+          this.controls = true
         }
-
-        vm.sliding = false
+        this.sliding = false
       }
 
     },
     changeSlide(direction) {
-      var vm = this,
-        header = document.getElementsByClassName('header')[0],
-        homepage = document.body.classList.contains('homepage'),
-        slide = vm.current_slide,
-        old = vm.current_slide,
-        new_slide = vm.all_slides[slide],
-        old_slide = vm.all_slides[old]
 
-      if (vm.sliding == false) {
-        vm.set_animate = true
+      if (this.sliding == false) {
+        this.setAnimate = true
+        let slide = this.currentSlide
+        let old = this.currentSlide
+        let newSlide = this.allSlides[slide]
+        let oldSlide = this.allSlides[old]
 
-        if (direction == 'prev') {
+        if (direction === 'prev') {
           slide--
           if (slide < 0) {
-            slide = vm.all_slides.length - 1
+            slide = this.allSlides.length - 1
           }
         } else if (direction == 'next') {
           slide++
-          if (slide >= vm.all_slides.length) {
+          if (slide >= this.allSlides.length) {
             slide = 0
           }
         } else {
           slide = direction
         }
 
-        if (direction != vm.current_slide) {
-          vm.sliding = true
-          vm.paused = true
+        if (direction !== this.currentSlide) {
+          this.sliding = true
+          this.paused = true
+          this.currentSlide = slide
+          newSlide = this.allSlides[slide]
+          newSlide.active = true
+          oldSlide.showText = false
 
-          vm.current_slide = slide
-          new_slide = vm.all_slides[slide]
-
-          new_slide.active = true
-          old_slide.show_text = false
+          var vm = this
 
           setTimeout(function() {
-            new_slide.show_image = true
-            new_slide.top = true
-
-            if (new_slide.class && (new_slide.class.includes('dark') || new_slide.class.includes('light'))) {
-              if (header) {
-                header.classList.remove('banner-color')
-              }
-
-              if (new_slide.class.includes('dark')) {
-                vm.slides_text = 'is-dark'
-                if (homepage && header) {
-                  header.classList.add('dark-header').remove('light-header')
-                }
-              } else {
-                vm.slides_text = 'is-light'
-                if (homepage && header) {
-                  header.classList.remove('dark-header').add('light-header')
-                }
-              }
-            } else {
-              if (header.length) {
-                header.classList.add('banner-color').remove('dark-header').remove('light-header')
-              }
-              vm.slides_text = 'is-auto'
-            }
+            newSlide.showImage = true
+            newSlide.top = true
+            vm.headerClass()
           }, 600);
 
           setTimeout(function() {
-            old_slide.active = false
-            old_slide.show_image = false
-            new_slide.show_text = true
-            new_slide.top = false
+            oldSlide.active = false
+            oldSlide.showImage = false
+            newSlide.showText = true
+            newSlide.top = false
           }, 1200);
 
           setTimeout(function() {
@@ -209,17 +151,42 @@ export default {
           }, 1500);
         }
       }
-    }
+    },
+    headerClass() {
+      const header = document.getElementsByClassName('header')[0];
+      const homepage = document.body.classList.contains('homepage');
+      const slide = this.allSlides[this.currentSlide];
+
+      if (header) {
+        if (slide.class && (slide.class.includes('dark') || slide.class.includes('light'))) {
+          header.classList.remove('banner-color');
+
+          if (slide.class.includes('dark')) {
+            this.slidesText = 'is-dark';
+            if (homepage && header) {
+              header.classList.add('dark-header').remove('light-header');
+            }
+          } else {
+            this.slidesText = 'is-light';
+            if (homepage && header) {
+              header.classList.remove('dark-header').add('light-header');
+            }
+          }
+        } else {
+          header.classList.add('banner-color').remove('dark-header').remove('light-header');
+          this.slidesText = 'is-auto';
+        }
+      }
+
+      return this.slidesText;
+    },
   },
   watch: {
     visible(value) {
-      var vm = this
-
       if (value == true) {
-        this.set_animate = true
-        this.set_visible = true
-
-        vm.loadSlides()
+        this.setAnimate = true
+        this.setVisible = true
+        this.loadSlides()
       }
     }
   },

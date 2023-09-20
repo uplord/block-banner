@@ -46,7 +46,6 @@
 </template>
 
 <script>
-
 export default {
   props: ['animate', 'visible', 'slides', 'id'],
   data() {
@@ -135,7 +134,7 @@ export default {
           setTimeout(function() {
             newSlide.showImage = true
             newSlide.top = true
-            vm.headerClass()
+            /vm.headerClass()
           }, 600);
 
           setTimeout(function() {
@@ -153,32 +152,35 @@ export default {
       }
     },
     headerClass() {
-      const header = document.getElementsByClassName('header')[0];
-      const homepage = document.body.classList.contains('homepage');
-      const slide = this.allSlides[this.currentSlide];
+      const header = document.getElementsByClassName('header')[0]
+      const homepage = document.body.classList.contains('homepage')
+      const slide = this.allSlides[this.currentSlide]
 
       if (header) {
         if (slide.class && (slide.class.includes('dark') || slide.class.includes('light'))) {
-          header.classList.remove('banner-color');
+          header.classList.remove('banner-color')
 
           if (slide.class.includes('dark')) {
-            this.slidesText = 'is-dark';
+            this.slidesText = 'is-dark'
             if (homepage && header) {
-              header.classList.add('dark-header').remove('light-header');
+              header.classList.add('dark-header')
+              header.classList.remove('light-header')
             }
           } else {
-            this.slidesText = 'is-light';
+            this.slidesText = 'is-light'
             if (homepage && header) {
-              header.classList.remove('dark-header').add('light-header');
+              header.classList.remove('dark-header')
+              header.classList.add('light-header')
             }
           }
         } else {
-          header.classList.add('banner-color').remove('dark-header').remove('light-header');
-          this.slidesText = 'is-auto';
+          header.classList.add('banner-color')
+          header.classList.remove(['dark-header', 'light-header'])
+          this.slidesText = 'is-auto'
         }
       }
 
-      return this.slidesText;
+      return this.slidesText
     },
   },
   watch: {

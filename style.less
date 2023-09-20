@@ -1,3 +1,11 @@
+:root {
+  --placeholder-color: #FFF;
+}
+
+:root.dark {
+  --placeholder-color: #202124;
+}
+
 
 .dark .is-auto {
 
@@ -216,7 +224,7 @@
       color: #FFF;
 
       .placeholder {
-        background: #202124;
+        background: var(--placeholder-color);
       }
 
       .text-wrap {
@@ -231,7 +239,7 @@
       color: #000;
 
       .placeholder {
-        background: #ffffff;
+        background: var(--placeholder-color);
       }
 
       .text-wrap {
@@ -325,7 +333,8 @@
     top: 0;
     width: 100%;
     height: 100%;
-    background: #ffffff;
+    background: var(--placeholder-color);
+    transition: 0.6s ease-out;
     opacity: 0;
   }
 
@@ -500,7 +509,6 @@
       font-size: 48px;
       line-height: 52px;
       font-weight: 700;
-      color: inherit;
 
       @media (max-width: 1000px) and (min-width: 641px) {
         font-size: 42px;
@@ -517,7 +525,6 @@
       font-size: 26px;
       line-height: 32px;
       font-weight: 700;
-      color: inherit;
 
       @media (max-width: 1000px) and (min-width: 641px) {
         font-size: 24px;
